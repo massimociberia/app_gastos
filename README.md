@@ -4,7 +4,9 @@ Este repositorio es para la aplicacion que voy a crear para controlar mis gastos
 
 PWA de control de gastos personales — **Next.js 16 (App Router) + TypeScript + Tailwind 4 + Supabase**.
 
-## Estado: Fase 1
+## Estado
+
+**Fase 1**
 
 - [x] Proyecto Next.js con App Router, TypeScript y Tailwind
 - [x] Conexión a Supabase (`@supabase/supabase-js` + `@supabase/ssr`)
@@ -12,7 +14,14 @@ PWA de control de gastos personales — **Next.js 16 (App Router) + TypeScript +
 - [x] Tabla `transacciones` con RLS (SQL en `supabase/schema.sql`)
 - [x] PWA instalable (manifest + íconos + service worker)
 
-Pendiente para fases siguientes: carga de gastos, dashboard, importación de PDF.
+**Fase 2**
+
+- [x] Formulario de carga manual (`origen='manual'`)
+- [x] Lista del mes, por fecha descendente, con eliminar
+- [x] Resumen del mes: ingresos, egresos y balance en pesos
+- [x] Navegación entre meses
+
+Pendiente para fases siguientes: dashboard con gráficos, importación de PDF.
 
 ## Puesta en marcha
 
@@ -52,6 +61,12 @@ Abrir http://localhost:3000 → redirige a `/login`.
 | `src/app/login/` | Pantalla de login (magic link) |
 | `src/app/auth/callback/route.ts` | Canje del `?code=` del magic link (PKCE) |
 | `src/app/auth/confirm/route.ts` | Alternativa con `token_hash` (ver abajo) |
+| `src/app/page.tsx` | Pantalla principal: resumen + alta + lista del mes |
+| `src/app/actions/transacciones.ts` | Server actions de alta y borrado |
+| `src/components/` | Selector de mes, resumen, formulario, lista |
+| `src/lib/categorias.ts` | Lista de categorías (editá acá para agregar/sacar) |
+| `src/lib/formato.ts` | Pesos, fechas y navegación de meses |
+| `tests/formato.test.mjs` | Tests de esa lógica (`npm test`) |
 | `src/app/manifest.ts` | Manifest de la PWA |
 | `public/sw.js` | Service worker (fallback offline) |
 | `supabase/schema.sql` | Tabla `transacciones` + políticas RLS |
