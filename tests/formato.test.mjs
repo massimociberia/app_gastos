@@ -10,6 +10,9 @@ import {
   rangoMes,
   esMesValido,
   esFechaISO,
+  etiquetaMesCorta,
+  formatearCompacto,
+  ultimosMeses,
 } from "../src/lib/formato.ts";
 
 // Espacio angosto que usa Intl entre el símbolo y el número.
@@ -83,6 +86,34 @@ test("rangoMes cubre el mes completo", () => {
 
 test("nombreMes", () => {
   assert.equal(nombreMes("2026-07"), "julio de 2026");
+});
+
+test("etiquetaMesCorta aclara el año sólo en enero", () => {
+  assert.equal(etiquetaMesCorta("2026-07"), "jul");
+  assert.equal(etiquetaMesCorta("2026-01"), "ene 26");
+  assert.equal(etiquetaMesCorta("2025-12"), "dic");
+});
+
+test("formatearCompacto abrevia para el eje", () => {
+  assert.equal(normalizar(formatearCompacto(900)), "$ 900");
+  assert.equal(normalizar(formatearCompacto(1500)), "$ 1,5 k");
+  assert.equal(normalizar(formatearCompacto(350000)), "$ 350 k");
+  assert.equal(normalizar(formatearCompacto(1250000)), "$ 1,3 M");
+  assert.equal(normalizar(formatearCompacto(0)), "$ 0");
+  assert.equal(normalizar(formatearCompacto(-2000)), "-$ 2 k");
+});
+
+test("ultimosMeses termina en el mes pedido y cruza el año", () => {
+  assert.deepEqual(ultimosMeses("2026-07", 6), [
+    "2026-02",
+    "2026-03",
+    "2026-04",
+    "2026-05",
+    "2026-06",
+    "2026-07",
+  ]);
+  assert.deepEqual(ultimosMeses("2026-01", 3), ["2025-11", "2025-12", "2026-01"]);
+  assert.deepEqual(ultimosMeses("2026-07", 1), ["2026-07"]);
 });
 
 test("validación de mes y fecha", () => {

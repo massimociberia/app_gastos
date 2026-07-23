@@ -78,7 +78,9 @@ export async function crearTransaccion(
     return { ok: false, error: error.message };
   }
 
-  revalidatePath("/");
+  // "layout" alcanza a todas las pantallas, no sólo a la lista: el dashboard
+  // también tiene que reflejar el cambio.
+  revalidatePath("/", "layout");
   return { ok: true };
 }
 
@@ -90,5 +92,7 @@ export async function eliminarTransaccion(formData: FormData): Promise<void> {
   // La política de RLS ya limita el delete a las filas propias.
   await supabase.from("transacciones").delete().eq("id", id);
 
-  revalidatePath("/");
+  // "layout" alcanza a todas las pantallas, no sólo a la lista: el dashboard
+  // también tiene que reflejar el cambio.
+  revalidatePath("/", "layout");
 }

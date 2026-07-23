@@ -141,3 +141,33 @@ export function formatearFechaCorta(fecha: string): string {
   const [, mes, dia] = fecha.split("-");
   return `${dia} ${MESES_CORTOS[Number(mes) - 1]}`;
 }
+
+/**
+ * Etiqueta corta para el eje del gráfico de meses: "jul", y con el año cuando
+ * arranca uno nuevo ("ene 26"), para que una serie a caballo de dos años no
+ * quede ambigua.
+ */
+export function etiquetaMesCorta(mes: string): string {
+  const numero = Number(mes.slice(5, 7));
+  const corto = MESES_CORTOS[numero - 1];
+  return numero === 1 ? `${corto} ${mes.slice(2, 4)}` : corto;
+}
+
+/** Para los ticks del eje Y: "$ 1,2 M", "$ 350 k", "$ 900". */
+export function formatearCompacto(monto: number): string {
+  const signo = monto < 0 ? "-" : "";
+  const abs = Math.abs(monto);
+  const conUnidad = (valor: number, unidad: string) =>
+    `${signo}$ ${valor.toLocaleString("es-AR", { maximumFractionDigits: 1 })} ${unidad}`;
+
+  if (abs >= 1_000_000) return conUnidad(abs / 1_000_000, "M");
+  if (abs >= 1_000) return conUnidad(abs / 1_000, "k");
+  return `${signo}$ ${abs.toLocaleString("es-AR", { maximumFractionDigits: 0 })}`;
+}
+
+/** Los `cantidad` meses que terminan en `mes`, del más viejo al más nuevo. */
+export function ultimosMeses(mes: string, cantidad: number): string[] {
+  return Array.from({ length: cantidad }, (_, i) =>
+    sumarMeses(mes, i - (cantidad - 1)),
+  );
+}
