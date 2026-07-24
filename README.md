@@ -29,7 +29,28 @@ PWA de control de gastos personales — **Next.js 16 (App Router) + TypeScript +
 - [x] Top 3 categorías del mes
 - [x] Responsive: una columna en el teléfono, dos en la compu
 
-Pendiente para fases siguientes: exportación e importación de PDF.
+**Fase 4**
+
+- [x] Botón "Exportar historial" en Movimientos
+- [x] CSV con todo el historial del usuario (no sólo el mes visible)
+- [x] Nombre con la fecha: `gastos_2026-07-23.csv`
+- [x] Descarga común en la compu, hoja de compartir en el celular
+
+Pendiente para fases siguientes: importación de PDF.
+
+### Sobre el CSV
+
+Columnas: `fecha, descripcion, monto, tipo, categoria, cuenta, origen`. Los
+montos van con punto decimal y siempre 2 decimales (`1234.50`), sin separador de
+miles, que es lo que lee cualquier programa. El archivo sale con BOM para que
+Excel muestre bien los acentos.
+
+Separador: **coma**, que es el estándar. Si vas a abrirlo con doble clic en Excel
+en español y te queda todo en una sola columna, cambiá `SEPARADOR` en
+`src/lib/csv.ts` a `";"`. Google Sheets y pandas se llevan bien con la coma.
+
+Las celdas que arrancan con `=`, `+`, `@` o un tabulador salen con una comilla
+simple adelante, para que Excel no las tome como fórmula.
 
 ### Sobre los gráficos
 
@@ -83,6 +104,8 @@ Abrir http://localhost:3000 → redirige a `/login`.
 | `src/app/page.tsx` | Movimientos: resumen + alta + lista del mes |
 | `src/app/dashboard/page.tsx` | Dashboard: torta, top 3 y barras de 6 meses |
 | `src/app/actions/transacciones.ts` | Server actions de alta y borrado |
+| `src/app/api/exportar/route.ts` | Genera y sirve el CSV del historial |
+| `src/lib/csv.ts` | Armado y escapado del CSV |
 | `src/components/` | Selector de mes, resumen, formulario, lista, navegación |
 | `src/components/graficos/` | Torta y barras (recharts) |
 | `src/lib/consultas.ts` | Lectura de transacciones, paginada |

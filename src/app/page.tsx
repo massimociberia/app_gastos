@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { traerTransacciones } from "@/lib/consultas";
+import BotonExportar from "@/components/boton-exportar";
 import Encabezado from "@/components/encabezado";
 import FormularioTransaccion from "@/components/formulario-transaccion";
 import ListaTransacciones from "@/components/lista-transacciones";
@@ -27,7 +28,7 @@ export default async function Home({
   const mes = esMesValido(mesPedido) ? mesPedido : mesDeHoy;
   const { desde, hasta } = rangoMes(mes);
 
-  const { transacciones, error } = await traerTransacciones(desde, hasta);
+  const { transacciones, error } = await traerTransacciones({ desde, hasta });
 
   const ingresos = totalPorTipo(transacciones, "ingreso");
   const egresos = totalPorTipo(transacciones, "egreso");
@@ -50,6 +51,12 @@ export default async function Home({
         fechaPorDefecto={mes === mesDeHoy ? hoyISO() : desde}
         cuentasConocidas={cuentasConocidas}
       />
+
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-sm font-medium">Movimientos del mes</h2>
+        {/* Exporta todo el historial, no sólo el mes que estás viendo. */}
+        <BotonExportar />
+      </div>
 
       {error ? (
         <p

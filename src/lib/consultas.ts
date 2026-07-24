@@ -4,30 +4,43 @@ import { createClient } from "@/lib/supabase/server";
 import type { Transaccion } from "@/lib/types";
 
 const POR_PAGINA = 1000; // tope que devuelve PostgREST por request
-const MAX_PAGINAS = 20;
+const MAX_PAGINAS = 50;
+
+type Opciones = {
+  /** Inclusive. Si no va, arranca desde la primera transacción. */
+  desde?: string;
+  /** Exclusive. Si no va, llega hasta la última. */
+  hasta?: string;
+  /** Por defecto de la más nueva a la más vieja. */
+  ascendente?: boolean;
+};
 
 /**
- * Trae las transacciones del rango [desde, hasta), paginando.
+ * Trae las transacciones del usuario, paginando.
  * Sin la paginación, a partir de las 1000 filas PostgREST corta la respuesta
  * sin avisar y los totales darían mal de forma silenciosa.
  */
-export async function traerTransacciones(
-  desde: string,
-  hasta: string,
-): Promise<{ transacciones: Transaccion[]; error: string | null }> {
+export async function traerTransacciones({
+  desde,
+  hasta,
+  ascendente = false,
+}: Opciones = {}): Promise<{
+  transacciones: Transaccion[];
+  error: string | null;
+}> {
   const supabase = await createClient();
   const filas: Transaccion[] = [];
 
   for (let pagina = 0; pagina < MAX_PAGINAS; pagina++) {
     const inicio = pagina * POR_PAGINA;
 
-    const { data, error } = await supabase
-      .from("transacciones")
-      .select("*")
-      .gte("fecha", desde)
-      .lt("fecha", hasta)
-      .order("fecha", { ascending: false })
-      .order("created_at", { ascending: false })
+    let consulta = supabase.from("transacciones").select("*");
+    if (desde) consulta = consulta.gte("fecha", desde);
+    if (hasta) consulta = consulta.lt("fecha", hasta);
+
+    const { data, error } = await consulta
+      .order("fecha", { ascending: ascendente })
+      .order("created_at", { ascending: ascendente })
       .range(inicio, inicio + POR_PAGINA - 1);
 
     if (error) return { transacciones: filas, error: error.message };

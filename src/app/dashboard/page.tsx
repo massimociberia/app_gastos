@@ -47,10 +47,10 @@ export default async function Dashboard({
   // Una sola consulta cubre las dos vistas: la torta usa el mes elegido y las
   // barras los 6 meses que terminan en él.
   const meses = ultimosMeses(mes, MESES_COMPARADOS);
-  const { transacciones, error } = await traerTransacciones(
-    `${meses[0]}-01`,
-    rangoMes(mes).hasta,
-  );
+  const { transacciones, error } = await traerTransacciones({
+    desde: `${meses[0]}-01`,
+    hasta: rangoMes(mes).hasta,
+  });
 
   const delMes = transacciones.filter((t) => t.fecha.slice(0, 7) === mes);
   const totalEgresos = totalPorTipo(delMes, "egreso");
